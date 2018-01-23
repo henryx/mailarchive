@@ -27,7 +27,7 @@ def initargs():
     args = argparse.ArgumentParser(description="Goffrey")
 
     # Global arguments
-    args.add_argument("-c", "--cfg", metavar="<file>",
+    args.add_argument("-c", "--cfg", metavar="<file>", required=True,
                       help="Use the specified configuration file")
 
     return args
