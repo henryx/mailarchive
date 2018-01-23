@@ -9,6 +9,7 @@ License       GPL version 2 (see GPL.txt for details)
 class IMAP(object):
     _host = None
     _port = None
+    _user = None
 
     def __init__(self):
         pass
@@ -42,3 +43,18 @@ class IMAP(object):
     @port.deleter
     def port(self):
         del self._port
+
+    @property
+    def user(self):
+        """
+        User property
+        """
+        return self._user
+
+    @user.setter
+    def user(self, user):
+        self._user = user
+
+    @user.deleter
+    def user(self):
+        del self._user
