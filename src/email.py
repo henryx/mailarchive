@@ -10,6 +10,7 @@ class IMAP(object):
     _host = None
     _port = None
     _user = None
+    _password = None
 
     def __init__(self):
         pass
@@ -58,3 +59,18 @@ class IMAP(object):
     @user.deleter
     def user(self):
         del self._user
+
+    @property
+    def password(self):
+        """
+        Password property
+        """
+        return self._password
+
+    @password.setter
+    def password(self, password):
+        self._password = password
+
+    @password.deleter
+    def password(self):
+        del self._password
