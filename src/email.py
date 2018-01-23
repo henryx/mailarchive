@@ -7,6 +7,9 @@ License       GPL version 2 (see GPL.txt for details)
 
 
 class IMAP(object):
+    """
+    Class used to manage connection to IMAP server
+    """
     _host = None
     _port = None
     _user = None
