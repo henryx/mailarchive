@@ -8,6 +8,7 @@ License       GPL version 2 (see GPL.txt for details)
 
 class IMAP(object):
     _host = None
+    _port = None
 
     def __init__(self):
         pass
@@ -33,3 +34,18 @@ class IMAP(object):
         Delete the hostname property
         """
         del self._host
+
+    @property
+    def port(self):
+        """
+        Port property
+        """
+        return self._port
+
+    @port.setter
+    def port(self, port):
+        self._port = port
+
+    @port.deleter
+    def port(self):
+        del self._port
