@@ -15,9 +15,31 @@ __email__ = "enrico.bianchi@gmail.com"
 __status__ = "Development"
 __version__ = "0.0.0"
 
+import argparse
+
+
+def initargs():
+    """
+    Argument parser initialization
+    :return: An object that parse arguments passed from command line
+    """
+
+    args = argparse.ArgumentParser(description="Goffrey")
+
+    # Global arguments
+    args.add_argument("-c", "--cfg", metavar="<file>",
+                      help="Use the specified configuration file")
+
+    return args
+
 
 def main():
-    pass
+    """
+    Main function
+    :return:
+    """
+
+    args = initargs().parse_args()
 
 
 if __name__ == '__main__':
