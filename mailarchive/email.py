@@ -15,6 +15,7 @@ class IMAP(object):
     _user = None
     _password = None
     _ssl = None
+    _schema = None
 
     def __init__(self):
         pass
@@ -93,3 +94,15 @@ class IMAP(object):
     @ssl.deleter
     def ssl(self):
         del self._ssl
+
+    @property
+    def schema(self):
+        return self._schema
+
+    @schema.setter
+    def schema(self, schema):
+        self._schema = schema
+
+    @schema.deleter
+    def schema(self):
+        del self._schema
