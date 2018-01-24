@@ -5,6 +5,8 @@ Description   A mail archiver
 License       GPL version 2 (see GPL.txt for details)
 """
 
+import imaplib
+
 
 class IMAP(object):
     """
@@ -16,6 +18,7 @@ class IMAP(object):
     _password = None
     _ssl = None
     _schema = None
+    _connection = None
 
     def __init__(self):
         pass
@@ -111,3 +114,17 @@ class IMAP(object):
     @schema.deleter
     def schema(self):
         del self._schema
+
+    def open(self):
+        """
+        Open connection to server
+        """
+        try:
+            if self.schema == "imap":
+                self._connection = imaplib.IMAP4(
+                    self.host, self.port)
+            else:
+                self._connection = imaplib.IMAP4_SSL(
+                    self.host, self.port)
+        except Exception as e:
+            raise
