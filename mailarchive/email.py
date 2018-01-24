@@ -97,6 +97,9 @@ class IMAP(object):
 
     @property
     def schema(self):
+        """
+        Schema property
+        """
         return self._schema
 
     @schema.setter
