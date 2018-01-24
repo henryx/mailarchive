@@ -16,6 +16,7 @@ __status__ = "Development"
 __version__ = "0.0.0"
 
 import argparse
+import configparser
 
 
 def initargs():
@@ -40,6 +41,7 @@ def main():
     """
 
     args = initargs().parse_args()
+    cfg = configparser.ConfigParser.read(args.cfg)
 
 
 if __name__ == '__main__':
