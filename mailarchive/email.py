@@ -128,3 +128,14 @@ class IMAP(object):
                     self.host, self.port)
         except Exception as e:
             raise
+
+    def close(self):
+        """
+        Close connection to the server
+        """
+        try:
+            if self._connection:
+                self._connection.close()
+                self._connection.logout()
+        except:
+            pass
