@@ -88,6 +88,8 @@ class IMAP(object):
 
     @scheme.setter
     def scheme(self, scheme):
+        if scheme not in ["imap", "imaps"]:
+            raise TypeError("Scheme not allowed: {}".format(scheme))
         self._scheme = scheme
 
     @scheme.deleter
