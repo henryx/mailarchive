@@ -139,3 +139,14 @@ class IMAP(object):
                 self._connection.logout()
         except:
             pass
+
+    def folders(self, folder="inbox"):
+        """
+        List folder in IMAP account
+        :param folder: Folder that start to list
+        :return: A tuple with result of operation and a list with folders extracted
+        """
+        self._connection.select(folder)
+        tree = self._connection.list()
+
+        return tree
