@@ -101,6 +101,8 @@ class IMAP(object):
 
     @schema.setter
     def schema(self, schema):
+        if schema not in ["imap", "imaps"]:
+            raise TypeError("Schema not supported: {}".format(schema))
         self._schema = schema
 
     @schema.deleter
