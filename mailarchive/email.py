@@ -16,7 +16,6 @@ class IMAP(object):
     _port = None
     _user = None
     _password = None
-    _ssl = None
     _schema = None
     _connection = None
 
@@ -82,21 +81,6 @@ class IMAP(object):
     @password.deleter
     def password(self):
         del self._password
-
-    @property
-    def ssl(self):
-        """
-        SSL property
-        """
-        return self._ssl
-
-    @ssl.setter
-    def ssl(self, ssl):
-        self._ssl = ssl
-
-    @ssl.deleter
-    def ssl(self):
-        del self._ssl
 
     @property
     def schema(self):
