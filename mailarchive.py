@@ -17,6 +17,7 @@ __version__ = "0.0.0"
 
 import argparse
 import configparser
+import sys
 
 
 def initargs():
@@ -42,7 +43,12 @@ def main():
 
     args = initargs().parse_args()
     cfg = configparser.ConfigParser()
-    cfg.read(args.cfg)
+    try:
+        cfg.read(args.cfg)
+    except:
+        print("Cannot open the configuration file {}: not found".format(args.cfg))
+        args.print_help()
+        sys.exit(1)
 
 
 if __name__ == '__main__':
