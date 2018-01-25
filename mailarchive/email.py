@@ -5,6 +5,8 @@ Description   A mail archiver
 License       GPL version 2 (see GPL.txt for details)
 """
 
+import imaplib
+
 
 class IMAP(object):
     """
@@ -14,7 +16,9 @@ class IMAP(object):
     _port = None
     _user = None
     _password = None
-    _scheme = None
+    _ssl = None
+    _schema = None
+    _connection = None
 
     def __init__(self):
         pass
@@ -80,18 +84,69 @@ class IMAP(object):
         del self._password
 
     @property
-    def scheme(self):
+    def ssl(self):
         """
-        scheme property
+        SSL property
         """
-        return self._scheme
+        return self._ssl
 
-    @scheme.setter
-    def scheme(self, scheme):
-        if scheme not in ["imap", "imaps"]:
-            raise TypeError("Scheme not allowed: {}".format(scheme))
-        self._scheme = scheme
+    @ssl.setter
+    def ssl(self, ssl):
+        self._ssl = ssl
 
-    @scheme.deleter
-    def scheme(self):
-        del self._scheme
+    @ssl.deleter
+    def ssl(self):
+        del self._ssl
+
+    @property
+    def schema(self):
+        """
+        Schema property
+        """
+        return self._schema
+
+    @schema.setter
+    def schema(self, schema):
+        if schema not in ["imap", "imaps"]:
+            raise TypeError("Schema not supported: {}".format(schema))
+        self._schema = schema
+
+    @schema.deleter
+    def schema(self):
+        del self._schema
+
+    def open(self):
+        """
+        Open connection to server
+        """
+        try:
+            if self.schema == "imap":
+                self._connection = imaplib.IMAP4(
+                    self.host, self.port)
+            else:
+                self._connection = imaplib.IMAP4_SSL(
+                    self.host, self.port)
+        except Exception as e:
+            raise
+
+    def close(self):
+        """
+        Close connection to the server
+        """
+        try:
+            if self._connection:
+                self._connection.close()
+                self._connection.logout()
+        except:
+            pass
+
+    def folders(self, folder="inbox"):
+        """
+        List folder in IMAP account
+        :param folder: Folder that start to list
+        :return: A tuple with result of operation and a list with folders extracted
+        """
+        self._connection.select(folder)
+        tree = self._connection.list()
+
+        return tree
