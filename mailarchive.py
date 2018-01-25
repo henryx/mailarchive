@@ -41,7 +41,8 @@ def main():
     """
 
     args = initargs().parse_args()
-    cfg = configparser.ConfigParser.read(args.cfg)
+    cfg = configparser.ConfigParser()
+    cfg.read(args.cfg)
 
 
 if __name__ == '__main__':
