@@ -29,7 +29,7 @@ class IMAP(object):
         """
         return self._host
 
-    @host.getter
+    @host.setter
     def host(self, host):
         self._host = host
 
