@@ -17,7 +17,10 @@ __version__ = "0.0.0"
 
 import argparse
 import configparser
+import emails
 import sys
+
+from contextlib import closing
 
 
 def initargs():
@@ -42,7 +45,14 @@ def execute(cfg):
 
     for section in cfg.sections():
         if section not in ["general", "logging"]:
-            pass
+            if cfg[section]["protocol"] in ["imap", "imaps"]:
+                with closing(emails.IMAP()) as imap:
+                    imap.user = cfg[section]["user"]
+                    imap.password = cfg[section]["password"]
+                    imap.host = cfg[section]["host"]
+                    imap.port = cfg[section]["port"]
+                    imap.scheme = cfg[section]["protocol"]
+                    imap.open()
 
 
 def main():
