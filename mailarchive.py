@@ -72,7 +72,8 @@ def main():
     args = initargs().parse_args()
     cfg = configparser.ConfigParser()
     try:
-        cfg.read(args.cfg)
+        with open(args.cfg) as f:
+            cfg.read_file(f)
     except:
         print("Cannot open the configuration file {}: not found".format(args.cfg))
         args.print_help()
