@@ -17,10 +17,10 @@ __version__ = "0.0.0"
 
 import argparse
 import configparser
-import emails
 import sys
-
 from contextlib import closing
+
+import emails
 
 
 def initargs():
@@ -52,7 +52,15 @@ def execute(cfg):
                     imap.host = cfg[section]["host"]
                     imap.port = cfg[section]["port"]
                     imap.scheme = cfg[section]["protocol"]
-                    imap.open()
+                    try:
+                        imap.open()
+                    except Exception as e:
+                        print(
+                            "Could not connect to {}://{}:{} - {}".format(imap.scheme,
+                                                                          imap.host,
+                                                                          imap.port,
+                                                                          e)
+                            )
 
 
 def main():
