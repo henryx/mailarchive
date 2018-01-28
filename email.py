@@ -16,7 +16,7 @@ class IMAP(object):
     _port = None
     _user = None
     _password = None
-    _schema = None
+    _scheme = None
     _connection = None
 
     def __init__(self):
@@ -83,28 +83,28 @@ class IMAP(object):
         del self._password
 
     @property
-    def schema(self):
+    def scheme(self):
         """
-        Schema property
+        Scheme property
         """
-        return self._schema
+        return self._scheme
 
-    @schema.setter
-    def schema(self, schema):
-        if schema not in ["imap", "imaps"]:
-            raise TypeError("Schema not supported: {}".format(schema))
-        self._schema = schema
+    @scheme.setter
+    def scheme(self, scheme):
+        if scheme not in ["imap", "imaps"]:
+            raise TypeError("scheme not supported: {}".format(scheme))
+        self._scheme = scheme
 
-    @schema.deleter
-    def schema(self):
-        del self._schema
+    @scheme.deleter
+    def scheme(self):
+        del self._scheme
 
     def open(self):
         """
         Open connection to server
         """
         try:
-            if self.schema == "imap":
+            if self.scheme == "imap":
                 self._connection = imaplib.IMAP4(
                     self.host, self.port)
             else:
