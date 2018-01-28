@@ -29,7 +29,7 @@ def initargs():
     :return: An object that parse arguments passed from command line
     """
 
-    args = argparse.ArgumentParser(description="Goffrey")
+    args = argparse.ArgumentParser(description="Mailarchive")
 
     # Global arguments
     args.add_argument("-c", "--cfg", metavar="<file>", required=True,
@@ -69,14 +69,15 @@ def main():
     :return:
     """
 
-    args = initargs().parse_args()
+    parser = initargs()
+    args = parser.parse_args()
     cfg = configparser.ConfigParser()
     try:
         with open(args.cfg) as f:
             cfg.read_file(f)
     except:
         print("Cannot open the configuration file {}: not found".format(args.cfg))
-        args.print_help()
+        parser.print_help()
         sys.exit(1)
 
     execute(cfg)
