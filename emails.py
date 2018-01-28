@@ -110,7 +110,8 @@ class IMAP(object):
             else:
                 self._connection = imaplib.IMAP4_SSL(
                     self.host, self.port)
-        except Exception as e:
+                self._connection.login(self.user, self.password)
+        except imaplib.IMAP4.error as e:
             raise
 
     def close(self):
