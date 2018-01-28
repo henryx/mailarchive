@@ -39,7 +39,11 @@ def execute(cfg):
     """
     Execute operations
     """
-    pass
+
+    for section in cfg.sections():
+        if section not in ["general", "logging"]:
+            pass
+
 
 def main():
     """
