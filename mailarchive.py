@@ -35,6 +35,12 @@ def initargs():
     return args
 
 
+def execute(cfg):
+    """
+    Execute operations
+    """
+    pass
+
 def main():
     """
     Main function
@@ -49,6 +55,8 @@ def main():
         print("Cannot open the configuration file {}: not found".format(args.cfg))
         args.print_help()
         sys.exit(1)
+
+    execute(cfg)
 
 
 if __name__ == '__main__':
