@@ -63,6 +63,11 @@ def execute(cfg):
                         )
                         break
 
+                    status, folders = imap.folders()
+                    if status == "OK":
+                        for folder in folders:
+                            print(folder.decode())
+
 
 def main():
     """
