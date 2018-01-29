@@ -56,11 +56,12 @@ def execute(cfg):
                         imap.open()
                     except Exception as e:
                         print(
-                            "Could not connect to {}://{}:{} - {}".format(imap.scheme,
-                                                                          imap.host,
-                                                                          imap.port,
-                                                                          e)
-                            )
+                            "Could not connect to {0}://{1}:{2} - {3!s}".format(imap.scheme,
+                                                                                imap.host,
+                                                                                imap.port,
+                                                                                str(e.args[0].decode()))
+                        )
+                        break
 
 
 def main():
