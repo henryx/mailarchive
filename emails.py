@@ -6,6 +6,7 @@ License       GPL version 2 (see GPL.txt for details)
 """
 
 import imaplib
+import re
 
 
 class IMAP(object):
@@ -129,9 +130,21 @@ class IMAP(object):
         """
         List folder in IMAP account
         :param folder: Folder that start to list
-        :return: A tuple with result of operation and a list with folders extracted
+        :return: The status of the operation and a list that contains the folder tree
         """
-        self._connection.select(folder)
-        tree = self._connection.list()
+        pattern = re.compile(
+            r'\((?P<flags>.*?)\) "(?P<delimiter>.*)" (?P<name>.*)')
 
-        return tree
+        def parse_list_response(line):
+            flags, delimiter, mailbox_name = pattern.match(line).groups()
+            mailbox_name = mailbox_name.strip('"')
+            return (flags, delimiter, mailbox_name)
+
+        self._connection.select(folder)
+        status, tree = self._connection.list()
+
+        result = []
+        for item in tree:
+            result.append(parse_list_response(item.decode()))
+
+        return status, result
