@@ -41,6 +41,7 @@ def initargs():
 def archive(folder):
     """
     Archive emails in folder
+    :param folder: Folder to archive
     """
     print(folder)
 
@@ -48,6 +49,7 @@ def archive(folder):
 def execute(cfg):
     """
     Execute operations
+    :param cfg: A configuration object
     """
 
     for section in cfg.sections():
