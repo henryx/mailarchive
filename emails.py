@@ -9,6 +9,36 @@ import imaplib
 import re
 
 
+class IMAPFolders(object):
+    """
+    Class iterator used for returning a tuple contains IMAP folder attributes,
+    IMAP folder separator and IMAP folder name
+    """
+    _data = None
+    _pattern = None
+    _index = 0
+
+    def __init__(self, data):
+        self._data = data
+        self._pattern = re.compile(
+            r'\((?P<flags>.*?)\) "(?P<delimiter>.*)" (?P<name>.*)')
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        try:
+            flags, delimiter, mailbox_name = self._pattern.match(
+                self._data[self._index].decode()).groups()
+        except IndexError:
+            raise StopIteration
+
+        mailbox_name = mailbox_name.strip('"')
+
+        self._index += 1
+        return (flags, delimiter, mailbox_name)
+
+
 class IMAP(object):
     """
     Class used to manage connection to IMAP server
@@ -130,21 +160,11 @@ class IMAP(object):
         """
         List folder in IMAP account
         :param folder: Folder that start to list
-        :return: The status of the operation and a list that contains the folder tree
+        :return: The status of the operation and an iterator that contains the folder tree
         """
-        pattern = re.compile(
-            r'\((?P<flags>.*?)\) "(?P<delimiter>.*)" (?P<name>.*)')
-
-        def parse_list_response(line):
-            flags, delimiter, mailbox_name = pattern.match(line).groups()
-            mailbox_name = mailbox_name.strip('"')
-            return (flags, delimiter, mailbox_name)
-
         self._connection.select(folder)
         status, tree = self._connection.list()
 
-        result = []
-        for item in tree:
-            result.append(parse_list_response(item.decode()))
+        folders = IMAPFolders(tree)
 
-        return status, result
+        return status, folders
