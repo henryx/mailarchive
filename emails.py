@@ -168,3 +168,16 @@ class IMAP(object):
         folders = IMAPFolders(tree)
 
         return status, folders
+
+    def count(self, folder="inbox"):
+        """
+        Count messages in folder (default INBOX)
+        :param folder: Folder to count
+        :return: The status of the operation and  counted messages in folder
+        """
+        status, counted = self._connection.select(folder)
+        
+        if status == "OK":
+            return status, int(counted[0].decode())
+        else:
+            return status, -1
