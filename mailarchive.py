@@ -38,9 +38,10 @@ def initargs():
     return args
 
 
-def archive(folder):
+def archive(imap, folder):
     """
     Archive emails in folder
+    :param imap: imap connection
     :param folder: Folder to archive
     """
     print(folder)
@@ -75,7 +76,7 @@ def execute(cfg):
                     status, folders = imap.folders()
                     if status == "OK":
                         for folder in folders:
-                            archive(folder)
+                            archive(imap, folder)
 
 
 def main():
