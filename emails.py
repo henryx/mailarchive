@@ -5,6 +5,7 @@ Description   A mail archiver
 License       GPL version 2 (see GPL.txt for details)
 """
 
+import email
 import imaplib
 import re
 
@@ -173,11 +174,27 @@ class IMAP(object):
         """
         Count messages in folder (default INBOX)
         :param folder: Folder to count
-        :return: The status of the operation and  counted messages in folder
+        :return: The status of the operation and counted messages in folder
         """
         status, counted = self._connection.select(folder)
-        
+
         if status == "OK":
             return status, int(counted[0].decode())
         else:
             return status, -1
+
+    def fetch(self, msgid, box="inbox"):
+        """
+        Fetch the email by ID
+        :param box: Selected folder (default INBOX)
+        :param msgid: ID of the email
+        :return: The status of the operation and the email
+        """
+
+        self._connection.select(box)
+        status, data = self._connection.uid('fetch', msgid, '(RFC822)')
+
+        if status == "OK":
+            return status, email.message_from_string(data[0][1])
+        else:
+            return status, None
