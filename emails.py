@@ -183,6 +183,24 @@ class IMAP(object):
         else:
             return status, -1
 
+    def list(self, folder="INBOX"):
+        """
+        List message IDs in the specified folder
+        :param folder: Selected folder (default INBOX)
+        :return: The status of the operation and a list of the IDs contained in folder
+        """
+
+        result = []
+        self._connection.select(folder)
+
+        status, data = self._connection.uid("search", None, "ALL")
+
+        for item in data:
+            ids = item.split()
+            result.append(ids)
+
+        return status, result
+
     def fetch(self, msgid, box="inbox"):
         """
         Fetch the email by ID
