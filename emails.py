@@ -213,9 +213,9 @@ class IMAP(object):
         status, data = self._connection.uid('fetch', msgid, '(RFC822)')
 
         if status == "OK":
-            if "\\Seen" in data[1]:
+            if "\\Seen" in data[1].decode():
                 self._connection.uid("store", msgid, "-flags", "\\Seen")
 
-            return status, email.message_from_string(data[0][1])
+            return status, email.message_from_string(data[0][1].decode())
         else:
             return status, None
