@@ -44,9 +44,12 @@ def archive(imap, folder):
     :param imap: imap connection
     :param folder: Folder to archive
     """
-    status, count = imap.count(folder[2])
+    status, count = imap.list(folder[2])
     if status == "OK":
-        pass
+        for msgid in count[0]:
+            status, mail = imap.fetch(msgid, folder[2])
+            if status == "OK":
+                pass
 
 
 def execute(cfg):
