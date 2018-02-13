@@ -157,7 +157,7 @@ class IMAP(object):
         except:
             pass
 
-    def folders(self, folder="inbox"):
+    def folders(self, folder="INBOX"):
         """
         List folder in IMAP account
         :param folder: Folder that start to list
@@ -201,15 +201,15 @@ class IMAP(object):
 
         return status, result
 
-    def fetch(self, msgid, box="inbox"):
+    def fetch(self, msgid, folder="INBOX"):
         """
         Fetch the email by ID
-        :param box: Selected folder (default INBOX)
+        :param folder: Selected folder (default INBOX)
         :param msgid: ID of the email
         :return: The status of the operation and the email
         """
 
-        self._connection.select(f'"{box}"')
+        self._connection.select(f'"{folder}"')
         status, data = self._connection.uid('fetch', msgid, '(RFC822)')
 
         if status == "OK":
