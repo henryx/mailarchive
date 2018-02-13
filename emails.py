@@ -163,7 +163,7 @@ class IMAP(object):
         :param folder: Folder that start to list
         :return: The status of the operation and an iterator that contains the folder tree
         """
-        self._connection.select(folder)
+        self._connection.select(f'"{folder}"')
         status, tree = self._connection.list()
 
         folders = IMAPFolders(tree)
@@ -191,7 +191,7 @@ class IMAP(object):
         """
 
         result = []
-        self._connection.select(folder)
+        self._connection.select(f'"{folder}"')
 
         status, data = self._connection.uid("search", None, "ALL")
 
@@ -209,7 +209,7 @@ class IMAP(object):
         :return: The status of the operation and the email
         """
 
-        self._connection.select(box)
+        self._connection.select(f'"{box}"')
         status, data = self._connection.uid('fetch', msgid, '(RFC822)')
 
         if status == "OK":
