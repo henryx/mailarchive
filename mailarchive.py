@@ -44,13 +44,24 @@ def fetch(imap, folder):
     fetch emails in folder
     :param imap: imap connection
     :param folder: Folder to archive
+    :return: A generator that yield fetched emails in folder
     """
     status, count = imap.list(folder[2])
     if status == "OK":
         for msgid in count[0]:
             status, mail = imap.fetch(msgid, folder[2])
             if status == "OK":
-                pass
+                yield mail
+
+
+def store(folder, mail):
+    """
+    store emails in folder to database
+    :param folder: folder that contain email
+    :param mail: the email
+    :return:
+    """
+    pass
 
 
 def execute(cfg):
@@ -82,7 +93,8 @@ def execute(cfg):
                     status, folders = imap.folders()
                     if status == "OK":
                         for folder in folders:
-                            fetch(imap, folder)
+                            for mail in fetch(imap, folder):
+                                store(folder, mail)
 
 
 def main():
