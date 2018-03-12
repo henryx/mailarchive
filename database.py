@@ -19,7 +19,7 @@ class Database:
         self._connection = sqlite3.connect(location)
 
         if not self._checkschema():
-            pass
+            self._createschema()
 
     def __enter__(self):
         return self
@@ -44,3 +44,25 @@ class Database:
                 return True
             else:
                 return False
+
+    def _createschema(self):
+        """
+        Create schema
+        """
+        pragmas = [
+            "PRAGMA journal_mode=WAL"
+        ]
+
+        tables = [
+            "CREATE TABLE headers(account, folder, received, msgid)",
+            "CREATE VIRTUAL TABLE messages USING FTS5(msgid, body)"
+        ]
+
+        with closing(self.connection.cursor()) as cur:
+            for pragma in pragmas:
+                cur.execute(pragma)
+
+            for table in tables:
+                cur.execute(table)
+
+            self.connection.commit()
