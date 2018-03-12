@@ -17,6 +17,7 @@ __version__ = "0.0.0"
 
 import argparse
 import configparser
+import imaplib
 import sys
 from contextlib import closing
 
@@ -69,7 +70,7 @@ def execute(cfg):
                     imap.scheme = cfg[section]["protocol"]
                     try:
                         imap.open()
-                    except Exception as e:
+                    except imaplib.IMAP4.error as e:
                         print(
                             "Could not connect to {0}://{1}:{2} - {3!s}".format(imap.scheme,
                                                                                 imap.host,
