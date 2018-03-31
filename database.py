@@ -76,9 +76,20 @@ class Database:
 
     def _store_body(self, cursor, mail):
         query = "INSERT INTO messages VALUES(?, ?)"
-        payload = mail.get_payload()
 
-        cursor.execute(query, (mail["Message-Id"], payload))
+        if mail.is_multipart():
+            body = ""
+            for part in mail.walk():
+                content = part.get_content_type()
+                disposition = str(part.get('Content-Disposition'))
+
+                if content == 'text/plain' and 'attachment' not in disposition:
+                    body = part.get_payload(decode=True)
+                    break
+        else:
+            body = mail.get_payload(decode=True)
+
+        cursor.execute(query, (mail["Message-Id"], body))
 
     def store(self, account, folder, mail):
         with closing(self.connection.cursor()) as cur:
