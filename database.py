@@ -25,12 +25,7 @@ class Database:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        try:
-            if self._connection:
-                self._connection.commit()
-                self._connection.close()
-        except:
-            pass
+        self.close()
 
     def _checkschema(self):
         """
@@ -66,3 +61,11 @@ class Database:
                 cur.execute(table)
 
             self.connection.commit()
+
+    def close(self):
+        try:
+            if self._connection:
+                self._connection.commit()
+                self._connection.close()
+        except:
+            pass
