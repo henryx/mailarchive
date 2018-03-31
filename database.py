@@ -74,10 +74,10 @@ class Database:
     def _store_headers(self, cursor, folder, mail):
         query = "INSERT INTO headers VALUES(?, ?, ?, ?, ?, ?)"
 
-    def _store_body(self, cursor, folder, mail):
+    def _store_body(self, cursor, mail):
         query = "INSERT INTO messages VALUES(?, ?)"
 
     def store(self, folder, mail):
         with closing(self.connection.cursor()) as cur:
             self._store_headers(cur, folder, mail)
-            self._store_body(cur, folder, mail)
+            self._store_body(cur, mail)
