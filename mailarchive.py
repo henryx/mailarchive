@@ -55,17 +55,18 @@ def fetch(imap, folder):
                 yield mail
 
 
-def store(account, location, folder, mail):
+def store(imap, dblocation, account, folders):
     """
-    store emails in folder to database
-    :param location: location of the database
+    store emails into the database
+    :param dblocation: location of the database
     :param account: account name
-    :param folder: folder that contain email
-    :param mail: the email
+    :param folders: folders containing emails
     :return:
     """
-    with database.Database(location) as db:
-        pass
+    with database.Database(dblocation) as db:
+        for folder in folders:
+            for mail in fetch(imap, folder):
+                db.store(account, folder, mail)
 
 
 def execute(cfg):
@@ -96,9 +97,7 @@ def execute(cfg):
 
                     status, folders = imap.folders()
                     if status == "OK":
-                        for folder in folders:
-                            for mail in fetch(imap, folder):
-                                store(section, cfg["general"]["database"], folder, mail)
+                        store(imap, cfg["general"]["database"], section, folders)
 
 
 def main():
