@@ -21,8 +21,7 @@ import imaplib
 import sys
 from contextlib import closing
 
-import database
-import emails
+from mailarchive import emails, database
 
 
 def initargs():
