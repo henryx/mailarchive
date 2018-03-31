@@ -63,8 +63,8 @@ def store(imap, dblocation, account, folders):
     :param folders: folders containing emails
     :return:
     """
-    with database.Database(dblocation) as db:
-        for folder in folders:
+    for folder in folders:
+        with database.Database(dblocation) as db:
             for mail in fetch(imap, folder):
                 db.store(account, folder, mail)
 
