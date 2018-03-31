@@ -70,14 +70,17 @@ class Database:
         except:
             pass
 
-
-    def _store_headers(self, cursor, folder, mail):
+    def _store_headers(self, cursor, account, folder, mail):
         query = "INSERT INTO headers VALUES(?, ?, ?, ?, ?, ?)"
+        cursor.execute(query, (account, folder, mail["Date"], mail["From"], mail["To"], mail["Message-Id"]))
 
     def _store_body(self, cursor, mail):
         query = "INSERT INTO messages VALUES(?, ?)"
+        payload = mail.get_payload()
 
-    def store(self, folder, mail):
+        cursor.execute(query, (mail["Message-Id"], payload))
+
+    def store(self, account, folder, mail):
         with closing(self.connection.cursor()) as cur:
-            self._store_headers(cur, folder, mail)
+            self._store_headers(cur, account, folder[2], mail)
             self._store_body(cur, mail)
