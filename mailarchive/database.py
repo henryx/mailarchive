@@ -4,8 +4,11 @@ Project       mailarchive
 Description   A mail archiver
 License       GPL version 2 (see GPL.txt for details)
 """
+import email
 import sqlite3
 from contextlib import closing
+
+import pymongo
 
 
 class Database:
@@ -95,3 +98,60 @@ class Database:
         with closing(self.connection.cursor()) as cur:
             self._store_headers(cur, account, folder[2], mail)
             self._store_body(cur, mail)
+
+
+class MongoDB:
+    _connection = None
+
+    @property
+    def connection(self):
+        return self._connection
+
+    def __init__(self, cfg):
+        host = cfg["host"]
+        port = cfg["port"] if "port" in cfg else 27017
+        user = cfg["user"] if "user" in cfg else None
+        password = cfg["password"] if "password" in cfg else None
+        dbauth= cfg["dbauth"] if "dbauth" in cfg else "admin"
+
+        self._connection = pymongo.MongoClient(host=host,
+                                               port=int(port),
+                                               username=user,
+                                               password=password,
+                                               authSource=dbauth)
+
+        self._database = self._connection[cfg["database"]]
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+    def close(self):
+        self._connection.close()
+
+    def store(self, account, folder, mail):
+        collection = self._database["data"]
+
+        if mail.is_multipart():
+            body = ""
+            for part in mail.walk():
+                content = part.get_content_type()
+                disposition = str(part.get('Content-Disposition'))
+
+                if content == 'text/plain' and 'attachment' not in disposition:
+                    body = part.get_payload(decode=True)
+                    break
+        else:
+            body = mail.get_payload(decode=True)
+
+        parser = email.parser.HeaderParser()
+        headers = parser.parsestr(mail.as_string())
+
+        data = {"account": account,
+                "folder": folder,
+                "headers": dict(headers),
+                "body": str(body)}
+
+        collection.insert_one(data)
