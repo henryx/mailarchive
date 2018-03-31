@@ -55,18 +55,27 @@ def fetch(imap, folder):
                 yield mail
 
 
-def store(imap, dblocation, account, folders):
+def store(cfg, imap, account, folders):
     """
     store emails into the database
-    :param dblocation: location of the database
+    :param cfg: configuration parameters
+    :param imap: imap connection
     :param account: account name
     :param folders: folders containing emails
     :return:
     """
     for folder in folders:
-        with database.Database(dblocation) as db:
-            for mail in fetch(imap, folder):
-                db.store(account, folder, mail)
+        dbtype = cfg["general"]["database"]
+        if dbtype == "sqlite":
+            with database.Database(cfg["sqlite"]["location"]) as db:
+                for mail in fetch(imap, folder):
+                    db.store(account, folder, mail)
+        elif dbtype == "mongo":
+            with database.MongoDB(cfg["mongo"]) as db:
+                for mail in fetch(imap, folder):
+                    db.store(account, folder, mail)
+        else:
+            raise ValueError("Database storage not found")
 
 
 def execute(cfg):
@@ -76,7 +85,7 @@ def execute(cfg):
     """
 
     for section in cfg.sections():
-        if section not in ["general", "logging"]:
+        if section not in ["general", "sqlite", "mongo"]:
             if cfg[section]["protocol"] in ["imap", "imaps"]:
                 with closing(emails.IMAP()) as imap:
                     imap.user = cfg[section]["user"]
@@ -97,7 +106,7 @@ def execute(cfg):
 
                     status, folders = imap.folders()
                     if status == "OK":
-                        store(imap, cfg["general"]["database"], section, folders)
+                        store(cfg, imap, section, folders)
 
 
 def main():
