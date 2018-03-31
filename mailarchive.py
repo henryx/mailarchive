@@ -49,6 +49,7 @@ def fetch(imap, folder):
     """
     status, count = imap.list(folder[2])
     if status == "OK":
+        print("Messages in folder {}: {}".format(folder[2], len(count[0])))
         for msgid in count[0]:
             status, mail = imap.fetch(msgid, folder[2])
             if status == "OK":
