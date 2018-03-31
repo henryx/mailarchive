@@ -21,6 +21,7 @@ import imaplib
 import sys
 from contextlib import closing
 
+import database
 import emails
 
 
@@ -54,14 +55,16 @@ def fetch(imap, folder):
                 yield mail
 
 
-def store(folder, mail):
+def store(location, folder, mail):
     """
     store emails in folder to database
+    :param location: location of the database
     :param folder: folder that contain email
     :param mail: the email
     :return:
     """
-    pass
+    with database.Database(location) as db:
+        pass
 
 
 def execute(cfg):
@@ -94,7 +97,7 @@ def execute(cfg):
                     if status == "OK":
                         for folder in folders:
                             for mail in fetch(imap, folder):
-                                store(folder, mail)
+                                store(cfg["general"]["database"], folder, mail)
 
 
 def main():
