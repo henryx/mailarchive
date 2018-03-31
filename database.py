@@ -49,7 +49,7 @@ class Database:
         ]
 
         tables = [
-            "CREATE TABLE headers(account, folder, received, msgid)",
+            "CREATE TABLE headers(account, folder, received, fromaddr, toaddr, msgid)",
             "CREATE VIRTUAL TABLE messages USING FTS5(msgid, body)"
         ]
 
