@@ -55,10 +55,11 @@ def fetch(imap, folder):
                 yield mail
 
 
-def store(location, folder, mail):
+def store(account, location, folder, mail):
     """
     store emails in folder to database
     :param location: location of the database
+    :param account: account name
     :param folder: folder that contain email
     :param mail: the email
     :return:
@@ -97,7 +98,7 @@ def execute(cfg):
                     if status == "OK":
                         for folder in folders:
                             for mail in fetch(imap, folder):
-                                store(cfg["general"]["database"], folder, mail)
+                                store(section, cfg["general"]["database"], folder, mail)
 
 
 def main():
