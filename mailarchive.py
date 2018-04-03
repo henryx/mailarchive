@@ -64,18 +64,20 @@ def store(cfg, imap, account, folders):
     :param folders: folders containing emails
     :return:
     """
-    for folder in folders:
-        dbtype = cfg["general"]["database"]
-        if dbtype == "sqlite":
-            with database.Database(cfg["sqlite"]["location"]) as db:
-                for mail in fetch(imap, folder):
-                    db.store(account, folder, mail)
-        elif dbtype == "mongo":
-            with database.MongoDB(cfg["mongo"]) as db:
-                for mail in fetch(imap, folder):
-                    db.store(account, folder, mail)
-        else:
-            raise ValueError("Database storage not found")
+    def dbstore(folders, db):
+        for folder in folders:
+            for mail in fetch(imap, folder):
+                db.store(account, folder, mail)
+
+    dbtype = cfg["general"]["database"]
+    if dbtype == "sqlite":
+        with database.Database(cfg["sqlite"]["location"]) as db:
+            dbstore(folders, db)
+    elif dbtype == "mongo":
+        with database.MongoDB(cfg["mongo"]) as db:
+            dbstore(folders, db)
+    else:
+        raise ValueError("Database storage not found")
 
 
 def execute(cfg):
