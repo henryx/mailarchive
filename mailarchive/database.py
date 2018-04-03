@@ -112,7 +112,7 @@ class MongoDB:
         port = cfg["port"] if "port" in cfg else 27017
         user = cfg["user"] if "user" in cfg else None
         password = cfg["password"] if "password" in cfg else None
-        dbauth= cfg["dbauth"] if "dbauth" in cfg else "admin"
+        dbauth = cfg["dbauth"] if "dbauth" in cfg else "admin"
 
         self._connection = pymongo.MongoClient(host=host,
                                                port=int(port),
@@ -149,9 +149,11 @@ class MongoDB:
         parser = email.parser.HeaderParser()
         headers = parser.parsestr(mail.as_string())
 
-        data = {"account": account,
-                "folder": folder,
-                "headers": dict(headers),
-                "body": str(body)}
+        data = {
+            "account": account,
+            "folder": folder[2],
+            "headers": dict(headers),
+            "body": body.decode(errors="replace") if type(body) == bytes else body
+        }
 
         collection.insert_one(data)
