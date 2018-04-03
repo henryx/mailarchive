@@ -216,6 +216,6 @@ class IMAP(object):
             if "\\Seen" in data[1].decode():
                 self._connection.uid("store", msgid, "-flags", "\\Seen")
 
-            return status, email.message_from_string(data[0][1].decode())
+            return status, email.message_from_string(data[0][1].decode(errors="replace"))
         else:
             return status, None
