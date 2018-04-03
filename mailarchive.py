@@ -87,6 +87,7 @@ def execute(cfg):
     for section in cfg.sections():
         if section not in ["general", "sqlite", "mongo"]:
             if cfg[section]["protocol"] in ["imap", "imaps"]:
+                print("Processing {} IMAP account".format(section))
                 with closing(emails.IMAP()) as imap:
                     imap.user = cfg[section]["user"]
                     imap.password = cfg[section]["password"]
