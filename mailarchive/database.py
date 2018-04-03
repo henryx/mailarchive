@@ -52,8 +52,9 @@ class Database:
         ]
 
         tables = [
-            "CREATE TABLE headers(account, folder, received, fromaddr, toaddr, msgid)",
-            "CREATE VIRTUAL TABLE messages USING FTS5(msgid, body)"
+            "CREATE TABLE accounts(account, folder)",
+            "CREATE TABLE headers(account, folder, headername, headervalue)",
+            "CREATE VIRTUAL TABLE messages USING FTS5(account, msgid, body)"
         ]
 
         with closing(self.connection.cursor()) as cur:
@@ -73,12 +74,17 @@ class Database:
         except:
             pass
 
-    def _store_headers(self, cursor, account, folder, mail):
-        query = "INSERT INTO headers VALUES(?, ?, ?, ?, ?, ?)"
-        cursor.execute(query, (account, folder, mail["Date"], mail["From"], mail["To"], mail["Message-Id"]))
+    def _store_account(self, cursor, account, folder):
+        query = "INSERT INTO accounts VALUES(?, ?)"
+        cursor.execute(query, (account, folder))
 
-    def _store_body(self, cursor, mail):
-        query = "INSERT INTO messages VALUES(?, ?)"
+    def _store_headers(self, cursor, account, folder, mail):
+        query = "INSERT INTO headers VALUES(?, ?, ?, ?)"
+        for header in mail:
+            cursor.execute(query, (account, folder, header, mail[header]))
+
+    def _store_body(self, cursor, account, mail):
+        query = "INSERT INTO messages VALUES(?, ?, ?)"
 
         if mail.is_multipart():
             body = ""
@@ -92,12 +98,13 @@ class Database:
         else:
             body = mail.get_payload(decode=True)
 
-        cursor.execute(query, (mail["Message-Id"], body))
+        cursor.execute(query, (account, mail["Message-Id"], body))
 
     def store(self, account, folder, mail):
         with closing(self.connection.cursor()) as cur:
+            self._store_account(cur, account, folder[2])
             self._store_headers(cur, account, folder[2], mail)
-            self._store_body(cur, mail)
+            self._store_body(cur, account, mail)
 
 
 class MongoDB:
