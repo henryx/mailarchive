@@ -212,7 +212,7 @@ class IMAP(object):
         self._connection.select(f'"{folder}"')
         status, data = self._connection.uid('fetch', msgid, '(RFC822)')
 
-        if status == "OK":
+        if status == "OK" and data:
             if "\\Seen" in data[1].decode():
                 self._connection.uid("store", msgid, "-flags", "\\Seen")
 
