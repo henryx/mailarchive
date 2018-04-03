@@ -8,6 +8,7 @@ import email
 import sqlite3
 from contextlib import closing
 
+import bson
 import pymongo
 
 
@@ -163,4 +164,7 @@ class MongoDB:
             "body": body.decode(errors="replace") if type(body) == bytes else body
         }
 
-        collection.insert_one(data)
+        try:
+            collection.insert_one(data)
+        except bson.errors.InvalidDocument as e:
+            print("|-- Cannot insert document: " + e)
