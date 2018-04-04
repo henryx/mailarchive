@@ -139,32 +139,38 @@ class MongoDB:
     def close(self):
         self._connection.close()
 
+    def exists(self, collection, mail):
+        cur = collection.count({"headers": {"header": "Message-ID", "value": mail["Message-ID"]}})
+
+        return False if cur == 0 else True
+
     def store(self, account, folder, mail):
         collection = self._database["data"]
 
-        if mail.is_multipart():
-            body = ""
-            for part in mail.walk():
-                content = part.get_content_type()
-                disposition = str(part.get('Content-Disposition'))
+        if not self.exists(collection, mail):
+            if mail.is_multipart():
+                body = ""
+                for part in mail.walk():
+                    content = part.get_content_type()
+                    disposition = str(part.get('Content-Disposition'))
 
-                if content == 'text/plain' and 'attachment' not in disposition:
-                    body = part.get_payload(decode=True)
-                    break
-        else:
-            body = mail.get_payload(decode=True)
+                    if content == 'text/plain' and 'attachment' not in disposition:
+                        body = part.get_payload(decode=True)
+                        break
+            else:
+                body = mail.get_payload(decode=True)
 
-        parser = email.parser.HeaderParser()
-        headers = parser.parsestr(mail.as_string())
+            parser = email.parser.HeaderParser()
+            headers = parser.parsestr(mail.as_string())
 
-        data = {
-            "account": account,
-            "folder": folder[2],
-            "headers": [dict(header=header, value=headers[header]) for header in headers],
-            "body": body.decode(errors="replace") if type(body) == bytes else body
-        }
+            data = {
+                "account": account,
+                "folder": folder[2],
+                "headers": [dict(header=header, value=headers[header]) for header in headers],
+                "body": body.decode(errors="replace") if type(body) == bytes else body
+            }
 
-        try:
-            collection.insert_one(data)
-        except bson.errors.InvalidDocument as e:
-            print("|-- Cannot insert document: {}".format(e))
+            try:
+                collection.insert_one(data)
+            except bson.errors.InvalidDocument as e:
+                print("|-- Cannot insert document: {}".format(e))
