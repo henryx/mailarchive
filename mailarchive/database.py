@@ -160,7 +160,7 @@ class MongoDB:
         data = {
             "account": account,
             "folder": folder[2],
-            "headers": dict(headers),
+            "headers": [dict(header=header, value=headers[header]) for header in headers],
             "body": body.decode(errors="replace") if type(body) == bytes else body
         }
 
