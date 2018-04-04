@@ -167,4 +167,4 @@ class MongoDB:
         try:
             collection.insert_one(data)
         except bson.errors.InvalidDocument as e:
-            print("|-- Cannot insert document: " + e)
+            print("|-- Cannot insert document: {}".format(e))
