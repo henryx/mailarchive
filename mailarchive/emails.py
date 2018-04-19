@@ -209,13 +209,10 @@ class IMAP(object):
         :return: The status of the operation and the email
         """
 
-        self._connection.select(f'"{folder}"')
+        self._connection.select(f'"{folder}"', readonly=True)
         status, data = self._connection.uid('fetch', msgid, '(RFC822)')
 
         if status == "OK" and data:
-            if "\\Seen" in data[1].decode():
-                self._connection.uid("store", msgid, "-flags", "\\Seen")
-
             return status, email.message_from_string(data[0][1].decode(errors="replace"))
         else:
             return status, None
