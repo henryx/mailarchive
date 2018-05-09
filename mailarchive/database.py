@@ -101,11 +101,23 @@ class Database:
 
         cursor.execute(query, (account, mail["Message-Id"], body))
 
+    def exists(self, cursor, account, folder, mail):
+        query = "SELECT Count(*) FROM headers WHERE account = ? AND folder = ? AND Upper(headername) = ? AND headervalue = ?"
+        cursor.execute(query, (account, folder, "Message-Id".upper(), mail["Message-Id"]))
+
+        counted = cursor.fetchone()[0]
+
+        if counted > 0:
+            return True
+        else:
+            return False
+
     def store(self, account, folder, mail):
         with closing(self.connection.cursor()) as cur:
-            self._store_account(cur, account, folder[2])
-            self._store_headers(cur, account, folder[2], mail)
-            self._store_body(cur, account, mail)
+            if not self.exists(cur, account, folder[2], mail):
+                self._store_account(cur, account, folder[2])
+                self._store_headers(cur, account, folder[2], mail)
+                self._store_body(cur, account, mail)
 
 
 class MongoDB:
