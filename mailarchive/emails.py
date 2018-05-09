@@ -213,6 +213,7 @@ class IMAP(object):
         status, data = self._connection.uid('fetch', msgid, '(RFC822)')
 
         if status == "OK" and data:
-            return status, email.message_from_string(data[0][1].decode(errors="replace"))
+            mail = email.message_from_string(data[0][1].decode(errors="replace"))
+            return status, mail
         else:
             return status, None
