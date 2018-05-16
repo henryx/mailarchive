@@ -188,29 +188,31 @@ class MongoDB:
         collection = self._database["data"]
 
         if not self.exists(account, folder[2], mail):
-            if mail.is_multipart():
-                body = ""
-                for part in mail.walk():
-                    content = part.get_content_type()
-                    disposition = str(part.get('Content-Disposition'))
+            return
 
-                    if content == 'text/plain' and 'attachment' not in disposition:
-                        body = part.get_payload(decode=True)
-                        break
-            else:
-                body = mail.get_payload(decode=True)
+        if mail.is_multipart():
+            body = ""
+            for part in mail.walk():
+                content = part.get_content_type()
+                disposition = str(part.get('Content-Disposition'))
 
-            parser = email.parser.HeaderParser()
-            headers = parser.parsestr(mail.as_string())
+                if content == 'text/plain' and 'attachment' not in disposition:
+                    body = part.get_payload(decode=True)
+                    break
+        else:
+            body = mail.get_payload(decode=True)
 
-            data = {
-                "account": account,
-                "folder": folder[2],
-                "headers": [dict(header=header, value=headers[header]) for header in headers],
-                "body": body.decode(errors="replace") if type(body) == bytes else body
-            }
+        parser = email.parser.HeaderParser()
+        headers = parser.parsestr(mail.as_string())
 
-            try:
-                collection.insert_one(data)
-            except bson.errors.InvalidDocument as e:
-                print("|-- Cannot insert document: {}".format(e))
+        data = {
+            "account": account,
+            "folder": folder[2],
+            "headers": [dict(header=header, value=headers[header]) for header in headers],
+            "body": body.decode(errors="replace") if type(body) == bytes else body
+        }
+
+        try:
+            collection.insert_one(data)
+        except bson.errors.InvalidDocument as e:
+            print("|-- Cannot insert document: {}".format(e))
