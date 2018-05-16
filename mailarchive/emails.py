@@ -204,15 +204,15 @@ class IMAP(object):
     def fetch(self, msgid, folder="INBOX"):
         """
         Fetch the email by ID
-        :param folder: Selected folder (default INBOX)
         :param msgid: ID of the email
+        :param folder: Selected folder (default INBOX)
         :return: The status of the operation and the email
         """
 
         self._connection.select(f'"{folder}"', readonly=True)
         status, data = self._connection.uid('fetch', msgid, '(RFC822)')
 
-        if status == "OK" and data:
+        if status == "OK" and (data and data[0]):
             mail = email.message_from_string(data[0][1].decode(errors="replace"))
             return status, mail
         else:
