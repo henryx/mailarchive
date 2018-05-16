@@ -209,8 +209,11 @@ class IMAP(object):
         :return: The status of the operation and the email
         """
 
-        self._connection.select(f'"{folder}"', readonly=True)
-        status, data = self._connection.uid('fetch', msgid, '(RFC822)')
+        try:
+            self._connection.select(f'"{folder}"', readonly=True)
+            status, data = self._connection.uid('fetch', msgid, '(RFC822)')
+        except imaplib.IMAP4.error:
+            return "KO", None
 
         if status == "OK" and (data and data[0]):
             try:
