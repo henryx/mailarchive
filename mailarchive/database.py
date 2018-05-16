@@ -101,11 +101,20 @@ class Database:
 
         cursor.execute(query, (account, mail["Message-Id"], body))
 
-    def exists(self, cursor, account, folder, mail):
-        query = "SELECT Count(*) FROM headers WHERE account = ? AND folder = ? AND Upper(headername) = ? AND headervalue = ?"
-        cursor.execute(query, (account, folder, "Message-Id".upper(), mail["Message-Id"]))
+    def exists(self, account, folder, mail):
+        """
+        Check if email is already stored for account
+        :param account: Account name
+        :param folder: Folder that contain the email
+        :param mail: The email
+        :return: True if is already stored else False
+        """
 
-        counted = cursor.fetchone()[0]
+        query = "SELECT Count(*) FROM headers WHERE account = ? AND folder = ? AND Upper(headername) = ? AND headervalue = ?"
+
+        with closing(self.connection.cursor()) as cursor:
+            cursor.execute(query, (account, folder, "Message-Id".upper(), mail["Message-Id"]))
+            counted = cursor.fetchone()[0]
 
         if counted > 0:
             return True
@@ -113,8 +122,8 @@ class Database:
             return False
 
     def store(self, account, folder, mail):
-        with closing(self.connection.cursor()) as cur:
-            if not self.exists(cur, account, folder[2], mail):
+        if not self.exists(account, folder[2], mail):
+            with closing(self.connection.cursor()) as cur:
                 self._store_account(cur, account, folder[2])
                 self._store_headers(cur, account, folder[2], mail)
                 self._store_body(cur, account, mail)
@@ -151,15 +160,34 @@ class MongoDB:
     def close(self):
         self._connection.close()
 
-    def exists(self, collection, mail):
-        cur = collection.count({"headers": {"header": "Message-ID", "value": mail["Message-ID"]}})
+    def exists(self, account, folder, mail):
+        """
+        Check if email is already stored for account
+        :param account: Account name
+        :param folder: Folder that contain the email
+        :param mail: The email
+        :return: True if is already stored else False
+        """
+
+        collection = self._database["data"]
+
+        data = {
+            "account": account,
+            "folder": folder,
+            "headers": {
+                "header": "Message-ID",
+                "value": mail["Message-ID"]
+            }
+        }
+
+        cur = collection.count(data)
 
         return False if cur == 0 else True
 
     def store(self, account, folder, mail):
         collection = self._database["data"]
 
-        if not self.exists(collection, mail):
+        if not self.exists(account, folder[2], mail):
             if mail.is_multipart():
                 body = ""
                 for part in mail.walk():
