@@ -201,17 +201,19 @@ class IMAP(object):
 
         return status, result
 
-    def fetch(self, msgid, folder="INBOX"):
+    def fetch(self, msgid, folder="INBOX", headers=False):
         """
         Fetch the email by ID
         :param msgid: ID of the email
         :param folder: Selected folder (default INBOX)
+        :param headers: Fetch only headers without body (default False)
         :return: The status of the operation and the email
         """
 
+        datatype = "(BODY.PEEK[HEADER])" if headers else "(RFC822)"
         try:
             self._connection.select(f'"{folder}"', readonly=True)
-            status, data = self._connection.uid('fetch', msgid, '(RFC822)')
+            status, data = self._connection.uid('fetch', msgid, datatype)
         except imaplib.IMAP4.error:
             return "KO", None
 
