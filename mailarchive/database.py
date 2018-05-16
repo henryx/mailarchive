@@ -122,11 +122,10 @@ class Database:
             return False
 
     def store(self, account, folder, mail):
-        if not self.exists(account, folder[2], mail):
-            with closing(self.connection.cursor()) as cur:
-                self._store_account(cur, account, folder[2])
-                self._store_headers(cur, account, folder[2], mail)
-                self._store_body(cur, account, mail)
+        with closing(self.connection.cursor()) as cur:
+            self._store_account(cur, account, folder[2])
+            self._store_headers(cur, account, folder[2], mail)
+            self._store_body(cur, account, mail)
 
 
 class MongoDB:
@@ -186,9 +185,6 @@ class MongoDB:
 
     def store(self, account, folder, mail):
         collection = self._database["data"]
-
-        if not self.exists(account, folder[2], mail):
-            return
 
         if mail.is_multipart():
             body = ""
