@@ -67,8 +67,12 @@ def store(cfg, imap, account, folders):
     def dbstore(folders, db):
         for folder in folders:
             for mail in fetch(imap, folder):
-                if not db.exists(account, folder[2], mail):
-                    db.store(account, folder, mail)
+                try:
+                    if not db.exists(account, folder[2], mail):
+                        db.store(account, folder, mail)
+                except TypeError as e:
+                    print("Error when storing mail in folder {}: {}".format(folder, e))
+                    sys.exit(1)
 
     dbtype = cfg["general"]["database"]
     if dbtype == "sqlite":
